@@ -14,6 +14,7 @@
     #include <sys/sendfile.h>
     #include <sys/stat.h>
     #include <fcntl.h>
+    #include <netinet/tcp.h>
 #endif
 
 namespace fs = std::filesystem;
