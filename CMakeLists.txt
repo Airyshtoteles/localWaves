@@ -31,3 +31,10 @@ if(WIN32)
     # add_compile_definitions(_WIN32_WINNT=0x0601) # Commented out to avoid redefinition warning
     target_link_libraries(CppVideoLan PRIVATE ws2_32 mswsock)
 endif()
+
+enable_testing()
+find_package(Qt6 REQUIRED COMPONENTS Test)
+
+add_executable(TestLocalWaves tests/TestLocalWaves.cpp)
+target_link_libraries(TestLocalWaves PRIVATE Qt6::Test Qt6::Network)
+add_test(NAME LocalWavesTest COMMAND TestLocalWaves)

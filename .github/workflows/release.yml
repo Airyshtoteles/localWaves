@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build Release Asset
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact_name: LocalWaves-Windows.zip
+            asset_name: LocalWaves-Windows
+          - os: ubuntu-latest
+            artifact_name: LocalWaves-Linux.tar.gz
+            asset_name: LocalWaves-Linux
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw'
+      if: runner.os == 'Windows'
+
+    - name: Install Qt (Linux)
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+      if: runner.os == 'Linux'
+
+    - name: Install Dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libgl1-mesa-dev
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Package (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd build
+        windeployqt --release CppVideoLan.exe
+        7z a ../${{ matrix.artifact_name }} *
+
+    - name: Package (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        cd build
+        tar -czvf ../${{ matrix.artifact_name }} CppVideoLan
+
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: ${{ matrix.artifact_name }}
