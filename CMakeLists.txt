@@ -5,6 +5,14 @@ project(CppVideoLan VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(MSVC)
+    add_compile_options(/Zc:__cplusplus)
+endif()
+
+if(WIN32)
+    add_compile_definitions(NOMINMAX)
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
 
 set(CMAKE_AUTOMOC ON)
