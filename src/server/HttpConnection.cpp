@@ -6,6 +6,7 @@
 #include <fstream>
 #include <filesystem>
 #include <cstring>
+#include <cstdio>
 
 #ifdef _WIN32
     #include <mswsock.h>
